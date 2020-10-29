@@ -11,7 +11,7 @@ const domainCtrl = {
         }
       : {};
     const pageSize = Number(req.query.pageSize) || 10;
-    const page = Number(req.query.pageNumber) || 1;
+    const page = Number(req.query.page) || 1;
     const sort = req.query.sortField
       ? {
           [req.query.sortField]: req.query.sortDirection || 1,
@@ -24,8 +24,28 @@ const domainCtrl = {
       limit: pageSize,
       skip: pageSize * (page - 1),
     });
+    const totalPages = Math.ceil(count / pageSize);
 
-    return res.json({ domainLists, page, pages: Math.ceil(count / pageSize) });
+    pages = [];
+    pageNum = 5; // odd
+    if (pageNum % 2 != 1) pageNum += 1;
+    if (totalPages < pageNum) {
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      for (let i = -((pageNum - 1) / 2); i <= (pageNum - 1) / 2; i++) {
+        pages.push(page + i);
+      }
+      while (pages[0] < 1) {
+        pages = pages.map((e) => e + 1);
+      }
+      while (pages[pages.length - 1] > totalPages) {
+        pages = pages.map((e) => e - 1);
+      }
+    }
+    console.log({ domainLists, page, totalPages, pages });
+    return res.json({ domainLists, page, totalPages, pages });
   },
   createDomain: async (req, res) => {
     try {

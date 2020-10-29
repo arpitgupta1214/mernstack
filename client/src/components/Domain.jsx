@@ -2,25 +2,49 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "../css/Domain.css";
 function Domain() {
-  const [data, setData] = useState([]);
+  const [data, setData] = useState({
+    domainLists: [],
+    page: 1,
+    totalPages: null,
+    pages: [1, 2, 3, 4, 5],
+  });
+
   const [config, setConfig] = useState({
     keyword: null,
-    pageSize: null,
-    page: null,
+    pageSize: 10,
+    page: 1,
     sortField: null,
     sortDirection: null,
   });
+
+  const tableHeads = [
+    { name: "#" },
+    { name: "Domain", sortField: "domainName" },
+    { name: "Host", sortField: "apiKey" },
+    { name: "Daily Limit", sortField: "emailLimit" },
+    { name: "Status" },
+    { name: "Action" },
+  ];
 
   useEffect(() => {
     const fetchData = async () => {
       const res = await axios.get(`http://localhost:5000/api/domain`, {
         params: config,
       });
-      setData(res.data.domainLists);
+      setData(res.data);
     };
     fetchData();
   }, [config]);
-
+  const setSortField = (sortField) => {
+    if (sortField) {
+      let sortDirection = 1;
+      if (config.sortField == sortField && config.sortDirection == 1) {
+        sortDirection = -1;
+      }
+      setConfig({ ...config, sortField, sortDirection });
+    }
+  };
+  console.log(config);
   return (
     <div>
       <div class="table_elements">
@@ -64,96 +88,33 @@ function Domain() {
       <table className="table table-striped">
         <thead>
           <tr className="table_header">
-            <th>#</th>
-            <th>
-              Domain
-              <span>
-                <i
-                  style={{ paddingLeft: "0.5rem" }}
-                  class="fa fa-long-arrow-up"
-                  aria-hidden="true"
-                ></i>
-              </span>
-              <span>
-                <i
-                  style={{ paddingLeft: "0.2rem" }}
-                  class="fa fa-long-arrow-down"
-                  aria-hidden="true"
-                ></i>
-              </span>
-            </th>
-            <th>
-              Host
-              <span>
-                <i
-                  style={{ paddingLeft: "0.5rem" }}
-                  class="fa fa-long-arrow-up"
-                  aria-hidden="true"
-                ></i>
-              </span>
-              <span>
-                <i
-                  style={{ paddingLeft: "0.2rem" }}
-                  class="fa fa-long-arrow-down"
-                  aria-hidden="true"
-                ></i>
-              </span>
-            </th>
-            <th>
-              Daily Limit
-              <span>
-                <i
-                  style={{ paddingLeft: "0.5rem" }}
-                  class="fa fa-long-arrow-up"
-                  aria-hidden="true"
-                ></i>
-              </span>
-              <span>
-                <i
-                  style={{ paddingLeft: "0.2rem" }}
-                  class="fa fa-long-arrow-down"
-                  aria-hidden="true"
-                ></i>
-              </span>
-            </th>
-            <th>
-              Status
-              <span>
-                <i
-                  style={{ paddingLeft: "0.5rem" }}
-                  class="fa fa-long-arrow-up"
-                  aria-hidden="true"
-                ></i>
-              </span>
-              <span>
-                <i
-                  style={{ paddingLeft: "0.2rem" }}
-                  class="fa fa-long-arrow-down"
-                  aria-hidden="true"
-                ></i>
-              </span>
-            </th>
-            <th>
-              Action
-              <span>
-                <i
-                  style={{ paddingLeft: "0.5rem" }}
-                  class="fa fa-long-arrow-up"
-                  aria-hidden="true"
-                ></i>
-              </span>
-              <span>
-                <i
-                  style={{ paddingLeft: "0.2rem" }}
-                  class="fa fa-long-arrow-down"
-                  aria-hidden="true"
-                ></i>
-              </span>
-            </th>
+            {tableHeads.map((head) => (
+              <th onClick={() => setSortField(head.sortField)}>
+                {head.name}
+                {head.sortField ? (
+                  <React.Fragment>
+                    <span>
+                      <i
+                        style={{ paddingLeft: "0.5rem" }}
+                        class="fa fa-long-arrow-up"
+                        aria-hidden="true"
+                      ></i>
+                    </span>
+                    <span>
+                      <i
+                        style={{ paddingLeft: "0.2rem" }}
+                        class="fa fa-long-arrow-down"
+                        aria-hidden="true"
+                      ></i>
+                    </span>
+                  </React.Fragment>
+                ) : null}
+              </th>
+            ))}
           </tr>
         </thead>
         <tbody>
-          {data.map((post, i) => (
+          {data.domainLists.map((post, i) => (
             <tr>
               <td key={post.id}>{++i}</td>
               <td>{post.domainName}</td>
@@ -172,16 +133,34 @@ function Domain() {
         </tbody>
       </table>
       <div className="pagination">
-        <a href="#">&laquo;</a>
-        <a href="#" className="active">
-          1
+        <a
+          href="#"
+          onClick={() => {
+            if (config.page > 1)
+              setConfig({ ...config, page: config.page - 1 });
+          }}
+        >
+          &laquo;
         </a>
-        <a href="#">2</a>
-        <a href="#">3</a>
-        <a href="#">4</a>
-        <a href="#">5</a>
-        <a href="#">6</a>
-        <a href="#">&raquo;</a>
+        {data.pages.map((pageNum) => (
+          <a
+            href="#"
+            className={data.page === pageNum ? "active" : ""}
+            onClick={() => setConfig({ ...config, page: pageNum })}
+          >
+            {pageNum}
+          </a>
+        ))}
+
+        <a
+          href="#"
+          onClick={() => {
+            if (config.page < data.totalPages)
+              setConfig({ ...config, page: config.page + 1 });
+          }}
+        >
+          &raquo;
+        </a>
       </div>
 
       <div className="show_entery">
