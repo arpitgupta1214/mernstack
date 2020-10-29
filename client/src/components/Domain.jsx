@@ -7,6 +7,7 @@ function Domain() {
     page: 1,
     totalPages: null,
     pages: [1, 2, 3, 4, 5],
+    totalEntries: null,
   });
 
   const [config, setConfig] = useState({
@@ -165,7 +166,10 @@ function Domain() {
 
       <div className="show_entery">
         <p>
-          Show entries <a href="#">10/1000</a>
+          Show entries{" "}
+          <a href="#">
+            {config.pageSize}/{data.totalEntries}
+          </a>
         </p>
       </div>
     </div>

@@ -45,7 +45,13 @@ const domainCtrl = {
       }
     }
     console.log({ domainLists, page, totalPages, pages });
-    return res.json({ domainLists, page, totalPages, pages });
+    return res.json({
+      domainLists,
+      page,
+      totalPages,
+      pages,
+      totalEntries: count,
+    });
   },
   createDomain: async (req, res) => {
     try {
