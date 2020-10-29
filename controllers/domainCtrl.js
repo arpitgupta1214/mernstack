@@ -27,21 +27,29 @@ const domainCtrl = {
     const totalPages = Math.ceil(count / pageSize);
 
     pages = [];
-    pageNum = 5; // odd
-    if (pageNum % 2 != 1) pageNum += 1;
-    if (totalPages < pageNum) {
+    paginationSize = 7; // odd
+    if (paginationSize % 2 != 1) paginationSize += 1;
+    if (totalPages < paginationSize) {
       for (let i = 1; i <= totalPages; i++) {
         pages.push(i);
       }
     } else {
-      for (let i = -((pageNum - 1) / 2); i <= (pageNum - 1) / 2; i++) {
-        pages.push(page + i);
-      }
-      while (pages[0] < 1) {
-        pages = pages.map((e) => e + 1);
-      }
-      while (pages[pages.length - 1] > totalPages) {
-        pages = pages.map((e) => e - 1);
+      if (page > totalPages - paginationSize) {
+        for (let i = totalPages - paginationSize + 1; i <= totalPages; i++) {
+          pages.push(i);
+        }
+      } else {
+        for (let i = page; i < page + (paginationSize - 1) / 2; i++) {
+          pages.push(i);
+        }
+        pages.push("...");
+        for (
+          let i = totalPages - (paginationSize - 1) / 2 + 1;
+          i <= totalPages;
+          i++
+        ) {
+          pages.push(i);
+        }
       }
     }
     console.log({ domainLists, page, totalPages, pages });

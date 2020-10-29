@@ -135,7 +135,6 @@ function Domain() {
       </table>
       <div className="pagination">
         <a
-          href="#"
           onClick={() => {
             if (config.page > 1)
               setConfig({ ...config, page: config.page - 1 });
@@ -145,16 +144,18 @@ function Domain() {
         </a>
         {data.pages.map((pageNum) => (
           <a
-            href="#"
             className={data.page === pageNum ? "active" : ""}
-            onClick={() => setConfig({ ...config, page: pageNum })}
+            onClick={
+              pageNum != "..."
+                ? () => setConfig({ ...config, page: pageNum })
+                : null
+            }
           >
             {pageNum}
           </a>
         ))}
 
         <a
-          href="#"
           onClick={() => {
             if (config.page < data.totalPages)
               setConfig({ ...config, page: config.page + 1 });
