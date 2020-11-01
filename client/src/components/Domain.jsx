@@ -142,18 +142,32 @@ function Domain() {
         >
           &laquo;
         </a>
-        {data.pages.map((pageNum) => (
-          <a
-            className={data.page === pageNum ? "active" : ""}
-            onClick={
-              pageNum != "..."
-                ? () => setConfig({ ...config, page: pageNum })
-                : null
-            }
-          >
-            {pageNum}
-          </a>
-        ))}
+        {data.pages.map((pageNum) => {
+          if (pageNum === "prev3" || pageNum === "next3") {
+            return (
+              <a
+                onClick={() =>
+                  setConfig({
+                    ...config,
+                    page:
+                      pageNum === "prev3" ? config.page - 3 : config.page + 3,
+                  })
+                }
+              >
+                ...
+              </a>
+            );
+          } else {
+            return (
+              <a
+                className={data.page === pageNum ? "active" : ""}
+                onClick={() => setConfig({ ...config, page: pageNum })}
+              >
+                {pageNum}
+              </a>
+            );
+          }
+        })}
 
         <a
           onClick={() => {

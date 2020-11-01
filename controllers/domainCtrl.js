@@ -11,48 +11,59 @@ const domainCtrl = {
         }
       : {};
     const pageSize = Number(req.query.pageSize) || 10;
-    const page = Number(req.query.page) || 1;
+    let page = Number(req.query.page) || 1;
     const sort = req.query.sortField
       ? {
           [req.query.sortField]: req.query.sortDirection || 1,
         }
       : {};
     const count = await Domain.countDocuments({ ...keyword });
-    // const domainLists = await Domain.find({ ...keyword })
+    const totalPages = Math.ceil(count / pageSize);
+    page = page > totalPages ? totalPages : page;
+
     const domainLists = await Domain.find({ ...keyword }, null, {
       sort,
       limit: pageSize,
       skip: pageSize * (page - 1),
     });
-    const totalPages = Math.ceil(count / pageSize);
 
     pages = [];
-    paginationSize = 7; // odd
-    if (paginationSize % 2 != 1) paginationSize += 1;
-    if (totalPages < paginationSize) {
+
+    if (totalPages <= 9) {
       for (let i = 1; i <= totalPages; i++) {
         pages.push(i);
       }
     } else {
-      if (page > totalPages - paginationSize) {
-        for (let i = totalPages - paginationSize + 1; i <= totalPages; i++) {
+      if (page >= totalPages - 3) {
+        for (let i = 1; i <= 3; i++) {
+          pages.push(i);
+        }
+        pages.push("prev3");
+        for (let i = totalPages - 3; i <= totalPages; i++) {
+          pages.push(i);
+        }
+      } else if (page <= 4) {
+        for (let i = 1; i <= 4; i++) {
+          pages.push(i);
+        }
+        pages.push("next3");
+        for (let i = totalPages - 2; i <= totalPages; i++) {
           pages.push(i);
         }
       } else {
-        for (let i = page; i < page + (paginationSize - 1) / 2; i++) {
+        for (let i = 1; i <= 3; i++) {
           pages.push(i);
         }
-        pages.push("...");
-        for (
-          let i = totalPages - (paginationSize - 1) / 2 + 1;
-          i <= totalPages;
-          i++
-        ) {
+        pages.push("prev3");
+        for (let i = page - 1; i <= page + 1; i++) {
+          pages.push(i);
+        }
+        pages.push("next3");
+        for (let i = totalPages - 2; i <= totalPages; i++) {
           pages.push(i);
         }
       }
     }
-    console.log({ domainLists, page, totalPages, pages });
     return res.json({
       domainLists,
       page,
