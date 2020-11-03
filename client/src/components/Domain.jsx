@@ -115,9 +115,9 @@ function Domain() {
           </tr>
         </thead>
         <tbody>
-          {data.domainLists.map((post, i) => (
+          {data.domainLists.map((post) => (
             <tr>
-              <td key={post.id}>{++i}</td>
+              <td key={post.id}>{post.snum}</td>
               <td>{post.domainName}</td>
               <td>{post.apiKey}</td>
               <td>{post.emailLimit}</td>

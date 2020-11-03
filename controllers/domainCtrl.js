@@ -25,8 +25,11 @@ const domainCtrl = {
       sort,
       limit: pageSize,
       skip: pageSize * (page - 1),
-    });
+    }).lean();
 
+    for (let i = 0; i < domainLists.length; i++) {
+      domainLists[i].snum = i + pageSize * (page - 1) + 1;
+    }
     pages = [];
 
     if (totalPages <= 9) {
